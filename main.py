@@ -6,7 +6,8 @@ from database import (
     create_table,
     save_url,
     get_url,
-    get_existing_url
+    get_existing_url,
+    short_code_exists
 )
 
 from schemas import URLRequest
@@ -40,11 +41,15 @@ def shorten_url(data: URLRequest):
         if datetime.now() <= expiry_date:
             return {
                 "short_code": short_code,
+                "short_url": f"http://127.0.0.1:8000/{short_code}",
                 "expires_at": expires_at,
                 "message": "Existing short URL reused"
             }
 
     short_code = generate_short_code()
+
+    while short_code_exists(short_code):
+        short_code = generate_short_code()
 
     expiry_date = (
         datetime.now() +
@@ -59,6 +64,7 @@ def shorten_url(data: URLRequest):
 
     return {
         "short_code": short_code,
+        "short_url": f"http://127.0.0.1:8000/{short_code}",
         "expires_at": expiry_date,
         "message": "New short URL created"
     }

@@ -85,3 +85,24 @@ def get_existing_url(original_url):
     conn.close()
 
     return result
+
+
+def short_code_exists(short_code):
+    conn = get_connection()
+
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT id
+        FROM urls
+        WHERE short_code = ?
+        """,
+        (short_code,)
+    )
+
+    result = cursor.fetchone()
+
+    conn.close()
+
+    return result is not None
